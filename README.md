@@ -167,19 +167,6 @@ To enable tree-shaking:
 
 Tree-shaking can significantly reduce your final bundle size in real-world applications.
 
-## Performance Comparison
-Barva is designed to be lightweight and fast. Here's how it compares to other
-libraries in terms of performance and bundle size:
-
-| Library | Bundle Size | Operations/sec |
-|---------|-------------|----------------|
-| Chalk   | ~40KB       | ~500,000       |
-| Kleur   | ~15KB       | ~750,000       |
-| Colorette | ~15KB       | ~780,000       |
-| Ansi-colors | ~16KB       | ~820,000       |
-| **Barva** | **~4KB**    | **~850,000** |
-
-*Note: Performance metrics are approximate and may vary based on environment.*
 
 ### Run Benchmarks Yourself
 

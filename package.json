@@ -31,7 +31,7 @@
     "patch": "yarn version --patch",
     "postversion": "git push --tags && echo \"Pushed version $npm_package_version it will be live soon.\"",
     "prebuild": "yarn lint && yarn test",
-    "prepublishOnly": "yarn build",
+    "prepublishOnly": "yarn lint && yarn test && yarn build",
     "profile": "yarn build && yarn profile:generate && yarn profile:process && yarn clean:logs",
     "profile:generate": "node --prof scripts/profile-barva.mjs",
     "profile:process": "node --prof-process isolate-*.log > profile-output.txt",
