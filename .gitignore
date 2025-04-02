@@ -69,6 +69,7 @@
 .yarn/cache
 .yarn/install-state.gz
 .yarn/unplugged
+.yarnrc.yml
 /.next/
 /.pnp
 /build
