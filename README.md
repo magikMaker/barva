@@ -250,4 +250,4 @@ yarn
 
 ## License
 
-MIT
+MIT © [Bjørn Wikkeling](https://bjorn.wikkeling.com)
