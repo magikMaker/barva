@@ -1,8 +1,15 @@
 #!/usr/bin/env node
 
 /**
- * Script to create a GitHub release for the current version
- * Usage:  node scripts/release-github.mjs [releaseNotes]
+ * Script to create a GitHub release for the current version.
+ * This script automates the process of creating a new GitHub release based on the version in package.json.
+ * It extracts repository information from git, reads the current version, and creates a release on GitHub.
+ *
+ * @module release-github
+ * @author magikMaker
+ * @version 1.0.0
+ *
+ * Usage: node scripts/release-github.mjs [releaseNotes]
  *
  * Note: Requires GITHUB_TOKEN environment variable to be set with a token
  * that has permission to create releases.
@@ -14,13 +21,26 @@ import { execSync } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Get the current directory
+/**
+ * The file path of the current module
+ * @constant {string} __filename
+ */
 const __filename = fileURLToPath(import.meta.url);
+
+/**
+ * The directory path of the current module
+ * @constant {string} __dirname
+ */
 const __dirname = path.dirname(__filename);
 
 /**
- * Extracts the repository owner and name from the git remote URL
- * @returns {{ owner: string, repo: string }} Repository owner and name
+ * Extracts the repository owner and name from the git remote URL.
+ * This function parses the git remote URL to extract the owner and repository name.
+ * It supports both HTTPS and SSH remote URL formats.
+ *
+ * @function getRepoInfo
+ * @returns {{ owner: string, repo: string }} An object containing the repository owner and name
+ * @throws {Error} If unable to parse repository info from git remote URL or if git command fails
  */
 function getRepoInfo() {
   try {
@@ -55,8 +75,12 @@ function getRepoInfo() {
 }
 
 /**
- * Gets the current version from package.json
- * @returns {string} The current version
+ * Gets the current version from package.json.
+ * This function reads the package.json file from the project root and extracts the version.
+ *
+ * @function getVersion
+ * @returns {string} The current version string from package.json
+ * @throws {Error} If unable to read or parse package.json
  */
 function getVersion() {
   try {
@@ -70,34 +94,68 @@ function getVersion() {
 }
 
 /**
- * Main function to create a GitHub release
+ * Main function to create a GitHub release.
+ * This function performs the following steps:
+ * 1. Checks for the required GitHub token
+ * 2. Gets repository information and current version
+ * 3. Creates a new release on GitHub with the specified tag and release notes
+ *
+ * @function createRelease
+ * @async
+ * @returns {Promise<void>} A promise that resolves when the release is created
+ * @throws {Error} If GitHub token is missing or if there's an error creating the release
  */
 async function createRelease() {
-  // Check for GitHub token
+  /**
+   * GitHub authentication token from environment variables
+   * @type {string|undefined}
+   */
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
     console.error('GITHUB_TOKEN environment variable is required');
     process.exit(1);
   }
 
-  // Initialize Octokit with the token
+  /**
+   * Initialized Octokit instance with authentication
+   * @type {Octokit}
+   */
   const octokit = new Octokit({
     auth: token
   });
 
-  // Get repository information
+  /**
+   * Repository information containing owner and repo name
+   * @type {{ owner: string, repo: string }}
+   */
   const repoInfo = getRepoInfo();
+
+  /**
+   * Current version from package.json
+   * @type {string}
+   */
   const version = getVersion();
+
+  /**
+   * Tag name for the release, prefixed with 'v'
+   * @type {string}
+   */
   const tagName = `v${version}`;
 
-  // Get custom release notes from command line or use default
+  /**
+   * Release notes from command line argument or default text
+   * @type {string}
+   */
   const releaseNotes = process.argv[2] ||
     `Release version ${version}`;
 
   try {
     console.log(`Creating GitHub release for ${tagName}...`);
 
-    // Create the release
+    /**
+     * The created GitHub release response
+     * @type {import('@octokit/rest').Octokit.Response<import('@octokit/rest').Octokit.ReposCreateReleaseResponse>}
+     */
     const release = await octokit.repos.createRelease({
       ...repoInfo,
       tag_name: tagName,
@@ -115,6 +173,10 @@ async function createRelease() {
   }
 }
 
+/**
+ * Execute the createRelease function and handle any uncaught errors
+ * @listens Promise.catch
+ */
 createRelease().catch(error => {
   console.error('Unexpected error:', error);
   process.exit(1);
