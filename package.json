@@ -1,6 +1,6 @@
 {
   "name": "barva",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A lightweight, tree-shakable library for terminal colors using tagged template literals",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -22,8 +22,9 @@
     "benchmark:recursion": "node scripts/recursion-benchmark.mjs",
     "benchmark:simple": "node --prof scripts/simple-benchmark.mjs",
     "benchmark:size": "node scripts/size-benchmark.mjs",
-    "build": "tsup src/index.ts --format cjs,esm --dts --minify",
+    "build": "yarn clean && tsup src/index.ts --format cjs,esm --dts --minify",
     "bundle-size": "node scripts/bundle-size.mjs",
+    "clean": "rimraf dist",
     "clean:logs": "rimraf isolate-*.log",
     "lint": "eslint src/**/*.ts",
     "patch": "yarn preversion && yarn version patch && yarn postversion",
