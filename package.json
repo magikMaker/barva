@@ -36,6 +36,7 @@
     "profile": "yarn build && yarn profile:generate && yarn profile:process && yarn clean:logs",
     "profile:generate": "node --prof scripts/profile-barva.mjs",
     "profile:process": "node --prof-process isolate-*.log > profile-output.txt",
+    "release": "node ./scripts/release-github.mjs",
     "test": "jest"
   },
   "keywords": [
@@ -79,6 +80,7 @@
   "homepage": "https://github.com/magikMaker/barva#readme",
   "devDependencies": {
     "@eslint/js": "^9.23.0",
+    "@octokit/rest": "^20.0.2",
     "@types/cli-color": "^2",
     "@types/jest": "^29.5.3",
     "@types/node": "^22.13.15",
