@@ -62,6 +62,16 @@ const colorizerCache = new Map<string, Colorizer>();
  * @returns Whether color output should be enabled
  */
 const isColorSupported = (): boolean => {
+  // Refresh environment variables and TTY status
+  try {
+    if (process?.env && process?.stdout) {
+      env = process.env;
+      stdoutIsTTY = process.stdout.isTTY;
+    }
+  } catch {
+    // Ignore errors in environments without process
+  }
+  
   // Early return if NO_COLOR is set and not empty (https://no-color.org/)
   if (env.NO_COLOR !== undefined && env.NO_COLOR !== '') return false;
   // Check for CI environments that might not support colors

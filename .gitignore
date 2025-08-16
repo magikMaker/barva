@@ -85,6 +85,7 @@ _.pid
 _.seed
 build
 build/Release
+CLAUDE.md
 coverage
 decks-local/
 dist
