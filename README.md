@@ -91,13 +91,23 @@ Colour support is automatically detected based on your environment. You can
 manually enable or disable colours:
 
 ```javascript
-import { setEnabled } from 'barva';
+import { setEnabled, setDisabled } from 'barva';
 
-// Disable colours
-setEnabled(false);
+// Enable colours (explicitly or by default when called without arguments)
+setEnabled();      // Enables colours
+setEnabled(true);  // Explicitly enables colours
+setEnabled(false); // Disables colours (inverse logic)
 
-// Re-enable colours
-setEnabled(true);
+// Disable colours using the convenience function
+setDisabled();      // Disables colours
+setDisabled(true);  // Explicitly disables colours
+setDisabled(false); // Enables colours (inverse logic)
+
+// Check if colours are currently enabled
+import { isEnabled } from 'barva';
+if (isEnabled()) {
+  console.log('Colours are enabled');
+}
 ```
 
 The library follows the [NO_COLOR](https://no-color.org/) standard and will 
@@ -122,8 +132,10 @@ if (barva.isColorSupported()) {
   console.log(barva.magenta`Colourful output!`);
 }
 
-// Disable colours
-barva.setEnabled(false);
+// Enable/disable colours
+barva.setEnabled();      // Enable colours
+barva.setDisabled();     // Disable colours
+barva.setEnabled(false); // Also disables colours
 ```
 
 ## Browser Support

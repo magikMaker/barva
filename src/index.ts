@@ -226,12 +226,29 @@ for (const name in CODES) {
 }
 
 /**
- * Enables or disabled all colors
+ * Enables or disables all colors
  *
- * @param enabled Whether colors should be enabled (defaults to true)
+ * @param enabled Whether colors should be enabled. If omitted, enables colors (true)
  */
 export const setEnabled = (enabled?: boolean): void => {
-  globalEnabled = enabled === undefined || enabled === null ? isColorSupported() : Boolean(enabled);
+  if (enabled === undefined || enabled === null) {
+    globalEnabled = true;
+  } else {
+    globalEnabled = Boolean(enabled);
+  }
+};
+
+/**
+ * Disables all colors (convenience function)
+ *
+ * @param disabled Whether colors should be disabled. If omitted, disables colors (true)
+ */
+export const setDisabled = (disabled?: boolean): void => {
+  if (disabled === undefined || disabled === null) {
+    globalEnabled = false;
+  } else {
+    globalEnabled = !disabled;
+  }
 };
 
 /**
@@ -259,13 +276,15 @@ export const {
 } = baseColorizers;
 
 // Create the default export object
-const barvaExport: Record<string, Colorizer | typeof setEnabled | typeof isEnabled> & {
+const barvaExport: Record<string, Colorizer | typeof setEnabled | typeof setDisabled | typeof isEnabled> & {
   setEnabled: typeof setEnabled;
+  setDisabled: typeof setDisabled;
   isColorSupported: typeof isEnabled;
   isEnabled: typeof isEnabled;
 } = {
   ...baseColorizers,
   setEnabled,
+  setDisabled,
   isEnabled,
   isColorSupported: isEnabled
 };

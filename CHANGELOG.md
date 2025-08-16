@@ -24,8 +24,13 @@ Make sure to add a link to the Pull Request and/or issue number (if applicable)
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Added
+- Added `setDisabled()` convenience function for disabling colors
+- `setEnabled()` without arguments now explicitly enables colors (previously detected environment)
+- `setDisabled()` without arguments explicitly disables colors
+
 ### Changed
-- Updated all dependencies to latest versions:
+- Updated all devDependencies to latest versions:
   - @eslint/js: 9.23.0 → 9.33.0
   - @octokit/rest: 20.0.2 → 22.0.0
   - @types/jest: 29.5.3 → 30.0.0
