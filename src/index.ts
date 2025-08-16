@@ -228,27 +228,19 @@ for (const name in CODES) {
 /**
  * Enables or disables all colors
  *
- * @param enabled Whether colors should be enabled. If omitted, enables colors (true)
+ * @param enabled Whether colors should be enabled. If omitted, uses environment detection
  */
 export const setEnabled = (enabled?: boolean): void => {
-  if (enabled === undefined || enabled === null) {
-    globalEnabled = true;
-  } else {
-    globalEnabled = Boolean(enabled);
-  }
+  globalEnabled = enabled === undefined || enabled === null ? isColorSupported() : Boolean(enabled);
 };
 
 /**
  * Disables all colors (convenience function)
  *
- * @param disabled Whether colors should be disabled. If omitted, disables colors (true)
+ * @param disabled Whether colors should be disabled. If omitted, defaults to true (disables colors)
  */
 export const setDisabled = (disabled?: boolean): void => {
-  if (disabled === undefined || disabled === null) {
-    globalEnabled = false;
-  } else {
-    globalEnabled = !disabled;
-  }
+  globalEnabled = disabled === undefined || disabled === null ? false : !disabled;
 };
 
 /**

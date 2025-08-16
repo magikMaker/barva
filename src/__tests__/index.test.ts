@@ -233,17 +233,25 @@ describe('Barva Library', () => {
       expect(enabledText).toMatch(startCode('32'));
     });
 
-    test('should enable colors when setEnabled() is called without arguments', () => {
-      // First disable colors
-      barvaImport.setEnabled(false);
-      expect(barvaImport.isEnabled()).toBe(false);
+    test('should use environment detection when setEnabled() is called without arguments', () => {
+      // Setup environment that supports colors
+      Object.defineProperty(process.stdout, 'isTTY', { value: true });
+      delete process.env.NO_COLOR;
+      delete process.env.FORCE_COLOR;
 
-      // Call setEnabled without arguments - should enable
+      // Call setEnabled without arguments - uses environment detection  
       barvaImport.setEnabled();
       expect(barvaImport.isEnabled()).toBe(true);
 
       const text = barvaImport.blue`This should be colored`;
       expect(text).toMatch(startCode('34'));
+
+      // Now setup environment that doesn't support colors
+      Object.defineProperty(process.stdout, 'isTTY', { value: false });
+      
+      // Call setEnabled without arguments again - uses environment detection
+      barvaImport.setEnabled();
+      expect(barvaImport.isEnabled()).toBe(false);
     });
 
     test('should disable colors using setDisabled()', () => {
@@ -355,34 +363,42 @@ describe('Barva Library', () => {
       expect(barvaImport.isEnabled()).toBe(true);
     });
 
-    test('should respect FORCE_COLOR=0 to disable colors', () => {
-      // Mock process.stdout.isTTY to true to ensure we're testing FORCE_COLOR=0
-      Object.defineProperty(process.stdout, 'isTTY', { value: true });
+    test('should respect FORCE_COLOR=0 to not force colors', () => {
+      // Mock process.stdout.isTTY to false 
+      Object.defineProperty(process.stdout, 'isTTY', { value: false });
 
-      // Set FORCE_COLOR to '0'
+      // Set FORCE_COLOR to '0' - means don't force colors, fall back to TTY
       process.env.FORCE_COLOR = '0';
 
-      // Explicitly disable colors since setEnabled() without args now enables
-      barvaImport.setEnabled(false);
-
-      const text = barvaImport.red`This should not be colored`;
-      expect(text).not.toMatch(startCode('31'));
+      // Call setEnabled without arguments - should use TTY check (false)
+      barvaImport.setEnabled();
       expect(barvaImport.isEnabled()).toBe(false);
+
+      // Now set TTY to true
+      Object.defineProperty(process.stdout, 'isTTY', { value: true });
+      
+      // Call setEnabled without arguments - should use TTY check (true)
+      barvaImport.setEnabled();
+      expect(barvaImport.isEnabled()).toBe(true);
     });
 
-    test('should respect FORCE_COLOR=false to disable colors', () => {
-      // Mock process.stdout.isTTY to true to ensure we're testing FORCE_COLOR=false
-      Object.defineProperty(process.stdout, 'isTTY', { value: true });
+    test('should respect FORCE_COLOR=false to not force colors', () => {
+      // Mock process.stdout.isTTY to false
+      Object.defineProperty(process.stdout, 'isTTY', { value: false });
 
-      // Set FORCE_COLOR to 'false'
+      // Set FORCE_COLOR to 'false' - means don't force colors, fall back to TTY
       process.env.FORCE_COLOR = 'false';
 
-      // Explicitly disable colors since setEnabled() without args now enables
-      barvaImport.setEnabled(false);
-
-      const text = barvaImport.cyan`This should not be colored`;
-      expect(text).not.toMatch(startCode('36'));
+      // Call setEnabled without arguments - should use TTY check (false)
+      barvaImport.setEnabled();
       expect(barvaImport.isEnabled()).toBe(false);
+
+      // Now set TTY to true
+      Object.defineProperty(process.stdout, 'isTTY', { value: true });
+      
+      // Call setEnabled without arguments - should use TTY check (true)
+      barvaImport.setEnabled();
+      expect(barvaImport.isEnabled()).toBe(true);
     });
 
     xtest('should prioritize NO_COLOR over FORCE_COLOR', () => {
@@ -415,10 +431,10 @@ describe('Barva Library', () => {
       // Ensure TTY is true so colors would be enabled
       Object.defineProperty(process.stdout, 'isTTY', { value: true });
 
-      // Call setEnabled without arguments - should enable
+      // Call setEnabled without arguments - uses environment detection (TTY is true, NO_COLOR is empty)
       barvaImport.setEnabled();
 
-      // Colors should be enabled
+      // Colors should be enabled because TTY is true and NO_COLOR is empty
       const text = barvaImport.yellow`This should be colored`;
       expect(text).toMatch(startCode('33'));
       expect(barvaImport.isEnabled()).toBe(true);
@@ -432,10 +448,10 @@ describe('Barva Library', () => {
       // Set TTY to true
       Object.defineProperty(process.stdout, 'isTTY', { value: true });
 
-      // Call setEnabled without arguments - should enable
+      // Call setEnabled without arguments - uses environment detection (TTY is true)
       barvaImport.setEnabled();
 
-      // Colors should be enabled
+      // Colors should be enabled because TTY is true
       const text = barvaImport.magenta`This should be colored`;
       expect(text).toMatch(startCode('35'));
       expect(barvaImport.isEnabled()).toBe(true);
@@ -443,8 +459,8 @@ describe('Barva Library', () => {
       // Now set TTY to false
       Object.defineProperty(process.stdout, 'isTTY', { value: false });
 
-      // Explicitly disable colors
-      barvaImport.setEnabled(false);
+      // Call setEnabled without arguments - uses environment detection (TTY is false)
+      barvaImport.setEnabled();
 
       // Colors should be disabled
       const text2 = barvaImport.cyan`This should not be colored`;

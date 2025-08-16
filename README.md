@@ -93,10 +93,10 @@ manually enable or disable colours:
 ```javascript
 import { setEnabled, setDisabled } from 'barva';
 
-// Enable colours (explicitly or by default when called without arguments)
-setEnabled();      // Enables colours
+// Control colours with setEnabled
+setEnabled();      // Uses environment detection (NO_COLOR, FORCE_COLOR, TTY)
 setEnabled(true);  // Explicitly enables colours
-setEnabled(false); // Disables colours (inverse logic)
+setEnabled(false); // Explicitly disables colours
 
 // Disable colours using the convenience function
 setDisabled();      // Disables colours

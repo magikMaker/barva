@@ -24,9 +24,13 @@ Make sure to add a link to the Pull Request and/or issue number (if applicable)
 <a name="unreleased"></a>
 ## [Unreleased]
 
+-------------------------------------------------------------------------------
+
+<a name="1.2.0"></a>
+## 1.2.0 - 2025-08-16
+
 ### Added
-- Added `setDisabled()` convenience function for disabling colors
-- `setEnabled()` without arguments now explicitly enables colors (previously detected environment)
+- `setDisabled()` convenience function for disabling colors
 - `setDisabled()` without arguments explicitly disables colors
 
 ### Changed
