@@ -125,7 +125,7 @@ const success = bold.rgb(0, 200, 120);
 
 console.log(orange`this is orange`);
 console.log(error`something went wrong`);
-console.log(warn`heads up — ${42} retries left`);
+console.log(warn`heads up, ${42} retries left`);
 console.log(success`done`);
 ```
 
