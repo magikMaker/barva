@@ -43,6 +43,32 @@ export const ColorLevel = {
   TrueColor: 3,
 } as const;
 
+/**
+ * Recognised terminal-emulator identifiers. Exported as constants so
+ * consumer code can introspect or match against the same values barva uses
+ * internally for detection.
+ *
+ * ```ts
+ * if (process.env.TERMINAL_EMULATOR === TerminalEmulator.JetBrainsJediTerm) {
+ *   // running inside an IntelliJ-family IDE terminal
+ * }
+ * ```
+ */
+export const TerminalEmulator = {
+  /**
+   * Value of the `TERMINAL_EMULATOR` environment variable set by every
+   * JetBrains-family IDE's built-in terminal — IntelliJ IDEA, WebStorm,
+   * PyCharm, PhpStorm, RubyMine, CLion, GoLand, Rider, DataGrip, Android
+   * Studio, and every other product that embeds JediTerm.
+   */
+  JetBrainsJediTerm: 'JetBrains-JediTerm',
+  /**
+   * Value of the `TERM_PROGRAM` environment variable set by VS Code's
+   * built-in terminal.
+   */
+  VSCode: 'vscode',
+} as const;
+
 /** Values that may be interpolated into a Barva tagged template. */
 export type BarvaValue =
   | string
@@ -392,8 +418,8 @@ const detectColorLevel = (envLike: EnvLike = readEnv()): ColorLevel => {
   // truecolor.
   if (
     env.WT_SESSION !== undefined ||
-    env.TERM_PROGRAM === 'vscode' ||
-    env.TERMINAL_EMULATOR === 'JetBrains-JediTerm'
+    env.TERM_PROGRAM === TerminalEmulator.VSCode ||
+    env.TERMINAL_EMULATOR === TerminalEmulator.JetBrainsJediTerm
   ) {
     return 3;
   }
@@ -1030,6 +1056,7 @@ export interface BarvaNamespace extends Record<BaseName, BarvaColorizer> {
   isEnabled: typeof isEnabled;
   isColorSupported: typeof isColorSupported;
   ColorLevel: typeof ColorLevel;
+  TerminalEmulator: typeof TerminalEmulator;
 }
 
 const barvaExport: BarvaNamespace = {
@@ -1051,6 +1078,7 @@ const barvaExport: BarvaNamespace = {
   isEnabled,
   isColorSupported,
   ColorLevel,
+  TerminalEmulator,
 };
 
 export default barvaExport;

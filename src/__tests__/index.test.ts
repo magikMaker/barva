@@ -476,6 +476,43 @@ describe('Barva Library', () => {
     });
   });
 
+  describe('TerminalEmulator constants', () => {
+    test('expose JetBrains and VS Code identifiers', () => {
+      expect(barvaImport.TerminalEmulator.JetBrainsJediTerm).toBe(
+        'JetBrains-JediTerm',
+      );
+      expect(barvaImport.TerminalEmulator.VSCode).toBe('vscode');
+    });
+
+    test('match what detection uses (JetBrains upgrades to truecolor)', () => {
+      setTTY(true);
+      delete process.env.COLORTERM;
+      process.env.TERM = 'xterm-256color';
+      process.env.TERMINAL_EMULATOR =
+        barvaImport.TerminalEmulator.JetBrainsJediTerm;
+      barvaImport.setEnabled();
+      expect(barvaImport.getLevel()).toBe(3);
+    });
+
+    test('match what detection uses (VS Code upgrades to truecolor)', () => {
+      setTTY(true);
+      delete process.env.COLORTERM;
+      process.env.TERM = 'xterm-256color';
+      process.env.TERM_PROGRAM = barvaImport.TerminalEmulator.VSCode;
+      barvaImport.setEnabled();
+      expect(barvaImport.getLevel()).toBe(3);
+    });
+
+    test('exposed on the default namespace export', () => {
+      expect(defaultExport.TerminalEmulator).toBe(
+        barvaImport.TerminalEmulator,
+      );
+      expect(defaultExport.TerminalEmulator.JetBrainsJediTerm).toBe(
+        'JetBrains-JediTerm',
+      );
+    });
+  });
+
   describe('isColorSupported', () => {
     test('reflects current environment without relying on cache', () => {
       barvaImport.setEnabled(false);

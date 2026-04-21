@@ -104,6 +104,23 @@ setLevel(ColorLevel.Basic);
 setLevel(ColorLevel.None);
 ```
 
+If you need to do your own terminal-emulator detection, the values barva
+itself keys on are exported as constants so you don't have to hardcode
+magic strings:
+
+```javascript
+import { TerminalEmulator } from 'barva';
+
+if (process.env.TERMINAL_EMULATOR === TerminalEmulator.JetBrainsJediTerm) {
+  // running inside any JetBrains IDE terminal — IDEA, WebStorm, PyCharm,
+  // PhpStorm, RubyMine, CLion, GoLand, Rider, DataGrip, Android Studio, …
+}
+
+if (process.env.TERM_PROGRAM === TerminalEmulator.VSCode) {
+  // running inside VS Code's built-in terminal
+}
+```
+
 ### Stripping ANSI
 
 ```javascript

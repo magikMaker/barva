@@ -35,6 +35,12 @@ Make sure to add a link to the Pull Request and/or issue number (if applicable)
   Covers every IDE in the family — IntelliJ IDEA, WebStorm, PyCharm,
   PhpStorm, RubyMine, CLion, GoLand, Rider, DataGrip, Android Studio, etc.
   — since they all share the same embedded terminal.
+- Exported `TerminalEmulator` constant with `JetBrainsJediTerm` (the
+  `TERMINAL_EMULATOR` value shared by every JetBrains-family IDE terminal)
+  and `VSCode` (the VS Code `TERM_PROGRAM` value). Consumer code can
+  introspect or match against the same identifiers that barva uses
+  internally for detection; the detection logic now references the
+  constants instead of inline string literals.
 
 -------------------------------------------------------------------------------
 
