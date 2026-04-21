@@ -1,7 +1,7 @@
 # Barva
 
-A lightweight (zero dependency - 1.7KB), tree-shakable library for terminal colours 
-using tagged template literals.
+A lightweight, tree-shakable library for terminal colours using tagged template
+literals.
 > _"Barva" is the Czech word for colour._
 
 [![npm version](https://img.shields.io/npm/v/barva.svg)](https://www.npmjs.com/package/barva)
@@ -11,12 +11,15 @@ using tagged template literals.
 
 - 🎨 **Simple API**: Intuitive tagged template literals
 - 🌲 **Tree-shakable**: Import only what you need
-- ⚡ **Performant**: Optimized for speed with caching
-- 🔗 **Chainable**: `red.bold.underline`
-- 🪆 **Nestable**: red\Error: ${blue\Info\}\`
+- ⚡ **Performant**: Optimised for speed with caching
+- 🔗 **Chainable**: `red.bold.underline` (fully typed — no `@ts-expect-error`)
+- 🪆 **Nestable**: `` red`Error: ${blue`Info`}` ``
+- 🌈 **256-color and 24-bit truecolor**: `rgb()`, `hex()`, `ansi256()`
+- ⬇️ **Automatic downgrade** when the terminal only supports fewer colours
 - 📦 **Tiny**: No dependencies, small package size
-- 🛡️ **TypeScript**: Full type definitions included
-- 👌 **Environment aware**: Respects NO_COLOR standard
+- 🛡️ **TypeScript**: Full type definitions included with exported helper types
+- 👌 **Environment aware**: Respects `NO_COLOR`, `FORCE_COLOR`, `COLORTERM`,
+  `TERM`, TTY, and common CI providers
 
 ## Installation
 
@@ -68,98 +71,152 @@ console.log(red.bgYellow`Warning!`);
 console.log(blue.underline.bgWhite`Styled text`);
 ```
 
+### 256-colour palette and truecolor
+
+```javascript
+import { rgb, hex, ansi256, bgAnsi256 } from 'barva';
+
+// 24-bit truecolor
+console.log(rgb(255, 128, 0)`orange`);
+console.log(hex('#ff80c0')`pink`);
+
+// 256-colour palette (0-255)
+console.log(ansi256(196)`bright red`);
+console.log(bgAnsi256(21)`blue background`);
+
+// Chain them with modifiers and basic colours
+console.log(bold.rgb(0, 200, 180).bgHex('#101820')`teal on navy`);
+```
+
+On terminals that only support 256 or 16 colours, rgb/hex calls are
+automatically downgraded to the nearest supported palette — no extra code
+required.
+
+### Stripping ANSI
+
+```javascript
+import { strip, ansiRegex } from 'barva';
+
+strip(red.bold`hi ${blue`there`}!`); // => "hi there!"
+
+// Regex provided for custom use cases:
+"some \x1b[31mred\x1b[0m text".replace(ansiRegex(), '');
+```
+
 ## Available Styles and Colours
 
-## Supported colors
+### Modifiers
 
-| Colours | Background Colours | Bright Colours | Bright Background Colours | Modifiers         |
-|---------|--------------------|----------------|---------------------------|-------------------|
-| black   | bgBlack            | blackBright    | bgBlackBright             | **bold**          |
-| red     | bgRed              | redBright      | bgRedBright               | dim               |
-| green   | bgGreen            | greenBright    | bgGreenBright             | hidden            |
-| yellow  | bgYellow           | yellowBright   | bgYellowBright            | inverse           |
-| blue    | bgBlue             | blueBright     | bgBlueBright              | _italic_          |
-| magenta | bgMagenta          | magentaBright  | bgMagentaBright           | ~~strikethrough~~ |
-| cyan    | bgCyan             | cyanBright     | bgCyanBright              | <u>underline</u>  |
-| white   | bgWhite            | whiteBright    | bgWhiteBright             |                   |
-| geay    | bgGrey             | greyBright     | bgGreyBright              |                   |
+`bold`, `dim`, `italic`, `underline`, `blink`, `inverse`, `hidden`,
+`strikethrough`, `doubleUnderline`, `framed`, `encircled`, `overline`,
+`superscript`, `subscript`.
 
+### Colours
+
+| Colours | Background Colours | Bright Colours | Bright Background Colours |
+|---------|--------------------|----------------|---------------------------|
+| black   | bgBlack            | blackBright    | bgBlackBright             |
+| red     | bgRed              | redBright      | bgRedBright               |
+| green   | bgGreen            | greenBright    | bgGreenBright             |
+| yellow  | bgYellow           | yellowBright   | bgYellowBright            |
+| blue    | bgBlue             | blueBright     | bgBlueBright              |
+| magenta | bgMagenta          | magentaBright  | bgMagentaBright           |
+| cyan    | bgCyan             | cyanBright     | bgCyanBright              |
+| white   | bgWhite            | whiteBright    | bgWhiteBright             |
+| grey    | bgGrey             | greyBright     | bgGreyBright              |
+
+`gray`/`bgGray` aliases are provided for US spelling.
 
 ## Controlling Colour Support
 
-Colour support is automatically detected based on your environment. You can 
-manually enable or disable colours:
+Colour support is automatically detected from the environment. You can
+override or inspect it at runtime:
 
 ```javascript
-import { setEnabled, setDisabled } from 'barva';
+import {
+  setEnabled, setDisabled, setLevel, getLevel,
+  isEnabled, isColorSupported
+} from 'barva';
 
-// Control colours with setEnabled
-setEnabled();      // Uses environment detection (NO_COLOR, FORCE_COLOR, TTY)
-setEnabled(true);  // Explicitly enables colours
-setEnabled(false); // Explicitly disables colours
+// Enable / disable
+setEnabled();      // re-run environment detection
+setEnabled(true);  // force colours on
+setEnabled(false); // force colours off
+setDisabled();     // alias for setEnabled(false)
+setDisabled(false);// alias for setEnabled(true)
 
-// Disable colours using the convenience function
-setDisabled();      // Disables colours
-setDisabled(true);  // Explicitly disables colours
-setDisabled(false); // Enables colours (inverse logic)
+// Precise level control (0 = off, 1 = basic, 2 = 256, 3 = truecolor)
+setLevel(3);
+getLevel();          // => 3
+setLevel(undefined); // re-run detection
 
-// Check if colours are currently enabled
-import { isEnabled } from 'barva';
-if (isEnabled()) {
-  console.log('Colours are enabled');
-}
+// Probes
+isEnabled();         // current cached state (getLevel() > 0)
+isColorSupported();  // re-evaluates the environment live
 ```
 
-The library follows the [NO_COLOR](https://no-color.org/) standard and will 
-automatically disable colours if:
+### Detection rules
 
-- The `NO_COLOR` environment variable is set
-- You're in a CI environment
-- STDOUT is not a TTY
+Detection honours, in priority order:
+
+1. `NO_COLOR` (any non-empty value) → colours off.
+2. `TERM=dumb` → colours off unless `FORCE_COLOR` is set.
+3. Truecolor-capable CI providers (`GITHUB_ACTIONS`, `GITEA_ACTIONS`,
+   `CIRCLECI`) → level 3.
+4. `FORCE_COLOR=1|2|3|true` → that level. `FORCE_COLOR=0|false` is treated as
+   "do not force" rather than "force off" — use `NO_COLOR` for a hard off.
+5. Basic-colour CI providers (`GITLAB_CI`, `TRAVIS`, `APPVEYOR`, `BUILDKITE`,
+   `DRONE`, `TF_BUILD`, `TEAMCITY_VERSION`, `CODEBUILD_BUILD_*`,
+   `BITBUCKET_COMMIT`, `VERCEL`, `NOW_BUILDER`, `NETLIFY`, `SEMAPHORE`,
+   `CIRRUS_CI`, `HEROKU_TEST_RUN_ID`, `WOODPECKER`, `CI_NAME=codeship`) →
+   level 1.
+6. `COLORTERM=truecolor|24bit`, `WT_SESSION`, `TERM_PROGRAM=vscode` → level 3.
+7. `TERM` matching `*-256color` → level 2.
+8. Any TTY fallback → level 1.
+9. Otherwise → level 0.
 
 ## Default Export
-
-You can also import the entire library:
 
 ```javascript
 import barva from 'barva';
 
 console.log(barva.blue`Hello!`);
 console.log(barva.green.bold`Success!`);
+console.log(barva.rgb(255, 128, 0)`orange`);
 
-// Check if colors are supported
 if (barva.isColorSupported()) {
   console.log(barva.magenta`Colourful output!`);
 }
-
-// Enable/disable colours
-barva.setEnabled();      // Enable colours
-barva.setDisabled();     // Disable colours
-barva.setEnabled(false); // Also disables colours
 ```
 
 ## Browser Support
-This library is designed for Node.js environments, but it can work in browsers 
-with appropriate bundling. When used in a browser, colour enabling/disabling 
-logic will fall back to always enabled since browser environments don't have 
-the concept of TTY.
+
+Barva is designed for Node.js. In non-Node environments (browsers, Workers),
+`process` is unavailable so detection resolves to level 0 and tagged templates
+return plain strings without ANSI codes. This means barva is safe to import in
+isomorphic code — it simply produces no escape sequences. A dedicated browser
+entry point (using CSS `%c` formatters in `console.log`) is on the roadmap
+(see `TODO.md`).
 
 ## Bundle Size
-Barva is designed to be lightweight and optimized for modern
-JavaScript applications:
 
-| Library     | Minified    | Gzipped    | Tree-Shakable     |
-|-------------|-------------|------------|-------------------|
-| picocolors  | 2.6 KB      | 0.8 KB     | ❌                |
-| Kleur       | 2.7 KB      | 1.1 KB     | ❌                |
-| ⚡️**Barva** | **3.9 KB**  | **1.8 KB** | ✅                |
-| Colorette   | 5.2 KB      | 1.7 KB     | ✅                |
-| Ansi-colors | 5.8 KB      | 1.9 KB     | ❌                |
-| Chalk       | 5.8 KB      | 2.1 KB     | ❌ (v4), ✅ (v5+) |
-> Note: Sizes are for the entire bundled library file. 
-> Actual impact on your app may be smaller with tree-shaking
+Barva is designed to be lightweight and optimised for modern JavaScript
+applications:
+
+| Library     | Minified   | Gzipped   | Tree-Shakable     |
+|-------------|------------|-----------|-------------------|
+| picocolors  | 2.6 KB     | 0.8 KB    | ❌                |
+| Kleur       | 2.7 KB     | 1.1 KB    | ❌                |
+| ⚡️**Barva** | **8.1 KB** | **3.4 KB**| ✅                |
+| Colorette   | 5.2 KB     | 1.7 KB    | ✅                |
+| Ansi-colors | 5.8 KB     | 1.9 KB    | ❌                |
+| Chalk       | 5.8 KB     | 2.1 KB    | ❌ (v4), ✅ (v5+) |
+
+> Note: Sizes are for the entire bundled library file. Actual impact on your
+> app may be smaller with tree-shaking.
 
 ### Tree-Shaking Support
+
 Barva is fully tree-shakable, allowing modern bundlers like webpack, Rollup,
 and esbuild to eliminate unused code. For example, if you only import `red`
 and `bold`, other colours and styles won't be included in your final bundle:
@@ -173,56 +230,24 @@ console.log(bold`This is bold text`);
 
 To enable tree-shaking:
 
-1. Use ES modules syntax (`import` rather than `require`)
-2. Use a bundler that supports tree-shaking (webpack, Rollup, esbuild, etc.)
-3. Ensure your package.json includes `"sideEffects": false`
-
-Tree-shaking can significantly reduce your final bundle size in real-world applications.
-
+1. Use ES modules syntax (`import` rather than `require`).
+2. Use a bundler that supports tree-shaking (webpack, Rollup, esbuild, etc.).
+3. Ensure your `package.json` includes `"sideEffects": false`.
 
 ### Run Benchmarks Yourself
 
-Want to verify the performance on your system? Run the included benchmark suite:
+Want to verify the performance on your system? Run the included benchmark
+suite:
 
 ```bash
-# Install dev dependencies first (choose your package manager)
-npm install
-# or
 yarn install
-# or
-pnpm install
-# or
-bun install
-
-# Build the library
-npm run build
-# or
 yarn build
-# or
-pnpm build
-# or
-bun run build
-
-# Run performance script
-npm run benchmark
-# or
 yarn benchmark
-# or
-pnpm benchmark
-# or
-bun run benchmark
-
-# Measure bundle sizes
-npm run bundle-size
-# or
 yarn bundle-size
-# or
-pnpm bundle-size
-# or
-bun run bundle-size
 ```
 
 The benchmark suite tests:
+
 - Basic colour application
 - Style chaining
 - Nested styling
@@ -231,33 +256,33 @@ The benchmark suite tests:
 See the `scripts` directory for the implementation details.
 
 #### Profiling the barva code
-In order to spot bottlenecks in the code, a profiling scripts is available
-in the `/scripts` directory: `profile-barva.mjs`. The easiest way to run this 
-is:
+
+In order to spot bottlenecks in the code, a profiling script is available in
+the `/scripts` directory: `profile-barva.mjs`. The easiest way to run this is:
 
 ```shell
 yarn profile
 ```
-You can also run the individual steps by hand, run the following commands:
+
+You can also run the individual steps by hand:
 
 ```shell
-# build the script
 yarn build
-
-# Run profiling and generate isolate log files
-node --prof benchmarks/profile-barva.mjs 
-
-# Combine the generated log files:
+node --prof scripts/profile-barva.mjs
 node --prof-process isolate-*.log > profile_output.txt
 ```
 
 ## Development
-A local cache with all npm dev dependencies exists in `.yarn/cache`
-see also: https://yarnpkg.com/features/caching
+
+A local cache with all npm dev dependencies exists in `.yarn/cache`; see also
+<https://yarnpkg.com/features/caching>.
 
 ```shell
-# add all dev dependencies
-yarn 
+yarn
+yarn test
+yarn test:coverage   # writes coverage/ with html, lcov, and summary reports
+yarn lint
+yarn build
 ```
 
 ## License
