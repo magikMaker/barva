@@ -104,6 +104,36 @@ setLevel(ColorLevel.Basic);
 setLevel(ColorLevel.None);
 ```
 
+#### Custom colour aliases
+
+Every factory call (`rgb`, `hex`, `ansi256`, …) and every chain access
+(`red.bold`, `bold.bgYellow`, …) returns a reusable colorizer, so you can
+define your own palette with nothing more than a variable:
+
+```javascript
+import { rgb, hex, red, bold, ansi256 } from 'barva';
+
+// Colour aliases
+const orange    = rgb(255, 128, 0);
+const brandPink = hex('#ff80c0');
+const highlight = ansi256(196);
+
+// Style aliases — full chains work the same way
+const error   = red.bold.underline;
+const warn    = hex('#ffa500').bold;
+const success = bold.rgb(0, 200, 120);
+
+console.log(orange`this is orange`);
+console.log(error`something went wrong`);
+console.log(warn`heads up — ${42} retries left`);
+console.log(success`done`);
+```
+
+Two bonuses come from the internal cache: calling `rgb(255, 128, 0)` twice
+from different modules returns the **same instance**, so scattering these
+around your codebase is free; and any alias is still a full colorizer, so
+you can keep chaining it (`` orange.bold`…` ``).
+
 If you need to do your own terminal-emulator detection, the values barva
 itself keys on are exported as constants so you don't have to hardcode
 magic strings:
@@ -242,7 +272,7 @@ applications:
 |-------------|------------|-----------|-------------------|
 | picocolors  | 2.6 KB     | 0.8 KB    | ❌                |
 | Kleur       | 2.7 KB     | 1.1 KB    | ❌                |
-| ⚡️**Barva** | **8.1 KB** | **3.4 KB**| ✅                |
+| ⚡️**Barva** | **8.1 KB** | **3.4 KB** | ✅                |
 | Colorette   | 5.2 KB     | 1.7 KB    | ✅                |
 | Ansi-colors | 5.8 KB     | 1.9 KB    | ❌                |
 | Chalk       | 5.8 KB     | 2.1 KB    | ❌ (v4), ✅ (v5+) |
