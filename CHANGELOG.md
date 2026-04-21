@@ -26,6 +26,17 @@ Make sure to add a link to the Pull Request and/or issue number (if applicable)
 
 -------------------------------------------------------------------------------
 
+<a name="1.3.1"></a>
+## [1.3.1] - 2026-04-21
+
+### Added
+- Exported `ColorLevel` constant (`None`, `Basic`, `Ansi256`, `TrueColor`) so
+  consumers can write `setLevel(ColorLevel.TrueColor)` instead of
+  `setLevel(3)`. Also re-exported on the default namespace so CJS users can
+  do `const { ColorLevel } = require('barva')`.
+
+-------------------------------------------------------------------------------
+
 <a name="1.3.0"></a>
 ## 1.3.0 - 2026-04-21
 

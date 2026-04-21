@@ -24,6 +24,25 @@
  */
 export type ColorLevel = 0 | 1 | 2 | 3;
 
+/**
+ * Named constants for {@link ColorLevel}. Use these instead of passing raw
+ * numbers to {@link setLevel}:
+ *
+ * ```ts
+ * setLevel(ColorLevel.TrueColor);
+ * ```
+ *
+ * The `as const` assertion narrows each field to its literal type (e.g.
+ * `ColorLevel.TrueColor` has type `3`), so values are assignable to the
+ * {@link ColorLevel} type without casts.
+ */
+export const ColorLevel = {
+  None: 0,
+  Basic: 1,
+  Ansi256: 2,
+  TrueColor: 3,
+} as const;
+
 /** Values that may be interpolated into a Barva tagged template. */
 export type BarvaValue =
   | string
@@ -999,6 +1018,7 @@ export interface BarvaNamespace extends Record<BaseName, BarvaColorizer> {
   getLevel: typeof getLevel;
   isEnabled: typeof isEnabled;
   isColorSupported: typeof isColorSupported;
+  ColorLevel: typeof ColorLevel;
 }
 
 const barvaExport: BarvaNamespace = {
@@ -1019,6 +1039,7 @@ const barvaExport: BarvaNamespace = {
   getLevel,
   isEnabled,
   isColorSupported,
+  ColorLevel,
 };
 
 export default barvaExport;

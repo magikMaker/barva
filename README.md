@@ -16,6 +16,8 @@ literals.
 - 🪆 **Nestable**: `` red`Error: ${blue`Info`}` ``
 - 🌈 **256-color and 24-bit truecolor**: `rgb()`, `hex()`, `ansi256()`
 - ⬇️ **Automatic downgrade** when the terminal only supports fewer colours
+- 🎚 **Level constants**: `setLevel(ColorLevel.TrueColor)` reads better than
+  a magic number
 - 📦 **Tiny**: No dependencies, small package size
 - 🛡️ **TypeScript**: Full type definitions included with exported helper types
 - 👌 **Environment aware**: Respects `NO_COLOR`, `FORCE_COLOR`, `COLORTERM`,
@@ -90,7 +92,17 @@ console.log(bold.rgb(0, 200, 180).bgHex('#101820')`teal on navy`);
 
 On terminals that only support 256 or 16 colours, rgb/hex calls are
 automatically downgraded to the nearest supported palette — no extra code
-required.
+required. If you want to force a specific capability level (e.g. in a test
+suite), use the `ColorLevel` constants:
+
+```javascript
+import { setLevel, ColorLevel } from 'barva';
+
+setLevel(ColorLevel.TrueColor); // equivalent to setLevel(3)
+setLevel(ColorLevel.Ansi256);
+setLevel(ColorLevel.Basic);
+setLevel(ColorLevel.None);
+```
 
 ### Stripping ANSI
 
@@ -135,7 +147,7 @@ override or inspect it at runtime:
 ```javascript
 import {
   setEnabled, setDisabled, setLevel, getLevel,
-  isEnabled, isColorSupported
+  isEnabled, isColorSupported, ColorLevel
 } from 'barva';
 
 // Enable / disable
@@ -145,10 +157,13 @@ setEnabled(false); // force colours off
 setDisabled();     // alias for setEnabled(false)
 setDisabled(false);// alias for setEnabled(true)
 
-// Precise level control (0 = off, 1 = basic, 2 = 256, 3 = truecolor)
-setLevel(3);
-getLevel();          // => 3
-setLevel(undefined); // re-run detection
+// Precise level control — use the ColorLevel constants or a raw number
+setLevel(ColorLevel.TrueColor); // same as setLevel(3)
+setLevel(ColorLevel.Ansi256);   // 256-colour palette
+setLevel(ColorLevel.Basic);     // basic 16 colours
+setLevel(ColorLevel.None);      // no colours
+getLevel();                     // => 3 | 2 | 1 | 0
+setLevel(undefined);            // re-run detection
 
 // Probes
 isEnabled();         // current cached state (getLevel() > 0)

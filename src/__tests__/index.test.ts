@@ -416,6 +416,38 @@ describe('Barva Library', () => {
     });
   });
 
+  describe('ColorLevel constants', () => {
+    test('expose named numeric levels', () => {
+      expect(barvaImport.ColorLevel.None).toBe(0);
+      expect(barvaImport.ColorLevel.Basic).toBe(1);
+      expect(barvaImport.ColorLevel.Ansi256).toBe(2);
+      expect(barvaImport.ColorLevel.TrueColor).toBe(3);
+    });
+
+    test('are assignable to setLevel without cast', () => {
+      barvaImport.setLevel(barvaImport.ColorLevel.TrueColor);
+      expect(barvaImport.getLevel()).toBe(3);
+      barvaImport.setLevel(barvaImport.ColorLevel.Ansi256);
+      expect(barvaImport.getLevel()).toBe(2);
+      barvaImport.setLevel(barvaImport.ColorLevel.Basic);
+      expect(barvaImport.getLevel()).toBe(1);
+      barvaImport.setLevel(barvaImport.ColorLevel.None);
+      expect(barvaImport.getLevel()).toBe(0);
+    });
+
+    test('exposed on the default namespace export', () => {
+      expect(defaultExport.ColorLevel).toBe(barvaImport.ColorLevel);
+      expect(defaultExport.ColorLevel.TrueColor).toBe(3);
+    });
+
+    test('numeric arguments to setLevel still work alongside constants', () => {
+      barvaImport.setLevel(3);
+      expect(barvaImport.getLevel()).toBe(3);
+      barvaImport.setLevel(0);
+      expect(barvaImport.getLevel()).toBe(0);
+    });
+  });
+
   describe('isColorSupported', () => {
     test('reflects current environment without relying on cache', () => {
       barvaImport.setEnabled(false);
