@@ -15,6 +15,7 @@ const COLOR_ENV_VARS = [
   'COLORTERM',
   'TERM',
   'TERM_PROGRAM',
+  'TERMINAL_EMULATOR',
   'WT_SESSION',
   'CI',
   'CI_NAME',
@@ -413,6 +414,33 @@ describe('Barva Library', () => {
       process.env.CI_NAME = 'codeship';
       barvaImport.setEnabled();
       expect(barvaImport.getLevel()).toBe(1);
+    });
+
+    test('TERM_PROGRAM=vscode upgraded to truecolor', () => {
+      setTTY(true);
+      delete process.env.COLORTERM;
+      process.env.TERM = 'xterm-256color';
+      process.env.TERM_PROGRAM = 'vscode';
+      barvaImport.setEnabled();
+      expect(barvaImport.getLevel()).toBe(3);
+    });
+
+    test('JetBrains-JediTerm upgraded to truecolor (IntelliJ family)', () => {
+      setTTY(true);
+      delete process.env.COLORTERM;
+      process.env.TERM = 'xterm-256color';
+      process.env.TERMINAL_EMULATOR = 'JetBrains-JediTerm';
+      barvaImport.setEnabled();
+      expect(barvaImport.getLevel()).toBe(3);
+    });
+
+    test('WT_SESSION upgraded to truecolor (Windows Terminal)', () => {
+      setTTY(true);
+      delete process.env.COLORTERM;
+      process.env.TERM = 'xterm-256color';
+      process.env.WT_SESSION = 'some-guid';
+      barvaImport.setEnabled();
+      expect(barvaImport.getLevel()).toBe(3);
     });
   });
 

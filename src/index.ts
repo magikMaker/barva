@@ -385,7 +385,18 @@ const detectColorLevel = (envLike: EnvLike = readEnv()): ColorLevel => {
 
   // Compute capability ceiling from terminal hints.
   if (colorTerm === 'truecolor' || colorTerm === '24bit') return 3;
-  if (env.WT_SESSION !== undefined || env.TERM_PROGRAM === 'vscode') return 3;
+  // Windows Terminal (WT_SESSION), VS Code's built-in terminal, and every
+  // JetBrains-family IDE terminal (IntelliJ IDEA, WebStorm, PyCharm,
+  // PhpStorm, RubyMine, CLion, GoLand, Rider, DataGrip, Android Studio, ...
+  // — all identified by TERMINAL_EMULATOR=JetBrains-JediTerm) support
+  // truecolor.
+  if (
+    env.WT_SESSION !== undefined ||
+    env.TERM_PROGRAM === 'vscode' ||
+    env.TERMINAL_EMULATOR === 'JetBrains-JediTerm'
+  ) {
+    return 3;
+  }
   if (/-256(color)?$/i.test(term)) return 2;
   return 1;
 };

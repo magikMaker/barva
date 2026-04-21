@@ -26,6 +26,18 @@ Make sure to add a link to the Pull Request and/or issue number (if applicable)
 
 -------------------------------------------------------------------------------
 
+<a name="1.3.2"></a>
+## [1.3.2] - 2026-04-21
+
+### Added
+- Detect JetBrains-family IDE terminals
+  (`TERMINAL_EMULATOR=JetBrains-JediTerm`) and upgrade them to truecolor.
+  Covers every IDE in the family — IntelliJ IDEA, WebStorm, PyCharm,
+  PhpStorm, RubyMine, CLion, GoLand, Rider, DataGrip, Android Studio, etc.
+  — since they all share the same embedded terminal.
+
+-------------------------------------------------------------------------------
+
 <a name="1.3.1"></a>
 ## [1.3.1] - 2026-04-21
 

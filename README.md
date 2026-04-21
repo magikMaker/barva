@@ -21,7 +21,7 @@ literals.
 - 📦 **Tiny**: No dependencies, small package size
 - 🛡️ **TypeScript**: Full type definitions included with exported helper types
 - 👌 **Environment aware**: Respects `NO_COLOR`, `FORCE_COLOR`, `COLORTERM`,
-  `TERM`, TTY, and common CI providers
+  `TERM`, TTY, IntelliJ-family and VS Code terminals, and common CI providers
 
 ## Installation
 
@@ -185,7 +185,10 @@ Detection honours, in priority order:
    `BITBUCKET_COMMIT`, `VERCEL`, `NOW_BUILDER`, `NETLIFY`, `SEMAPHORE`,
    `CIRRUS_CI`, `HEROKU_TEST_RUN_ID`, `WOODPECKER`, `CI_NAME=codeship`) →
    level 1.
-6. `COLORTERM=truecolor|24bit`, `WT_SESSION`, `TERM_PROGRAM=vscode` → level 3.
+6. `COLORTERM=truecolor|24bit`, `TERMINAL_EMULATOR=JetBrains-JediTerm`
+   (every IntelliJ-family IDE terminal — IDEA, WebStorm, PyCharm, PhpStorm,
+   RubyMine, CLion, GoLand, Rider, DataGrip, Android Studio, …),
+   `WT_SESSION`, `TERM_PROGRAM=vscode` → level 3.
 7. `TERM` matching `*-256color` → level 2.
 8. Any TTY fallback → level 1.
 9. Otherwise → level 0.
