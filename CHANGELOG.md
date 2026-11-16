@@ -32,6 +32,11 @@ Make sure to add a link to the Pull Request and/or issue number (if applicable)
   Reported by trackoor in
   [#1](https://github.com/magikMaker/barva/issues/1).
 
+### Changed
+- The README has a "Nesting" section describing how outer styles continue
+  after nested templates, and the limitation with styling barva did not
+  apply itself.
+
 -------------------------------------------------------------------------------
 
 <a name="1.3.2"></a>

@@ -12,7 +12,7 @@ literals.
 - 🎨 **Simple API**: Intuitive tagged template literals
 - 🌲 **Tree-shakable**: Import only what you need
 - ⚡ **Performant**: Optimised for speed with caching
-- 🔗 **Chainable**: `red.bold.underline` (fully typed — no `@ts-expect-error`)
+- 🔗 **Chainable**: `red.bold.underline` (fully typed, no `@ts-expect-error`)
 - 🪆 **Nestable**: `` red`Error: ${blue`Info`}` ``
 - 🌈 **256-color and 24-bit truecolor**: `rgb()`, `hex()`, `ansi256()`
 - ⬇️ **Automatic downgrade** when the terminal only supports fewer colours
@@ -72,6 +72,22 @@ console.log(red.bgYellow`Warning!`);
 // More complex chaining
 console.log(blue.underline.bgWhite`Styled text`);
 ```
+
+### Nesting
+
+The outer style continues after a nested template, at any depth. Each
+level restores its own style when an inner one ends:
+
+```javascript
+import { bgYellow, red, bold } from 'barva';
+
+// " d" is red on yellow again, " e" is yellow again
+console.log(bgYellow`a ${red`b ${bold`c`} d`} e`);
+```
+
+Barva ends its output with a full reset (`\x1b[0m`), so it can only restore
+styles it applied itself. Styling added around barva output by raw escape
+codes or another colour library does not continue after the barva text.
 
 ### 256-colour palette and truecolor
 
