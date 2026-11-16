@@ -24,6 +24,11 @@ Make sure to add a link to the Pull Request and/or issue number (if applicable)
 <a name="unreleased"></a>
 ## [Unreleased]
 
+-------------------------------------------------------------------------------
+
+<a name="1.3.3"></a>
+## [1.3.3] - 2026-11-17
+
 ### Fixed
 - Nested templates no longer drop the outer style on the text after the
   inner template, e.g. `` red`Error: ${bold`Important!`} more` `` keeps
