@@ -24,6 +24,10 @@ Make sure to add a link to the Pull Request and/or issue number (if applicable)
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Changed
+- `yarn npm publish` publishes to `registry.npmjs.org` directly
+  (`npmPublishRegistry` in `.yarnrc.yml`).
+
 -------------------------------------------------------------------------------
 
 <a name="1.3.3"></a>
