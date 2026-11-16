@@ -766,10 +766,6 @@ const EMPTY_TEMPLATE: TemplateStringsArray = (() => {
  */
 const callEmpty = (fn: BarvaColorizer): string => fn(EMPTY_TEMPLATE);
 
-/** Escapes a literal string for use in a RegExp. */
-const escapeForRegex = (s: string): string =>
-  s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
 /**
  * Canonicalises a list of segments: dedupes by key, sorts for a stable cache
  * key and rendering order.
@@ -832,18 +828,18 @@ const makeColorizer = (segments: ReadonlyArray<Segment>): BarvaColorizer => {
     let idx = 0;
     parts[idx++] = start;
 
-    const trailingReset = new RegExp(escapeForRegex(RESET_STR) + '$');
+    // Every full reset inside an interpolated value (typically the closing
+    // reset of a nested colorizer) also clears this colorizer's style, so
+    // each one is followed by `start` to reopen it. Each nesting level
+    // does the same, which restores the full style stack at any depth.
+    const reopen = RESET_STR + start;
 
     for (let i = 0; i < len; i++) {
       parts[idx++] = strings[i];
       if (i < numValues) {
         const v = values[i];
-        if (isColorizer(v)) {
-          const nested = callEmpty(v);
-          parts[idx++] = nested.replace(trailingReset, start);
-        } else {
-          parts[idx++] = String(v);
-        }
+        const nested = isColorizer(v) ? callEmpty(v) : String(v);
+        parts[idx++] = nested.split(RESET_STR).join(reopen);
       }
     }
     parts[idx] = RESET_STR;

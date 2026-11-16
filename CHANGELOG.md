@@ -24,6 +24,14 @@ Make sure to add a link to the Pull Request and/or issue number (if applicable)
 <a name="unreleased"></a>
 ## [Unreleased]
 
+### Fixed
+- Nested templates no longer drop the outer style on the text after the
+  inner template, e.g. `` red`Error: ${bold`Important!`} more` `` keeps
+  " more" red. Every reset inside an interpolated value is followed by the
+  outer style again, which restores all levels in deeper nesting too.
+  Reported by trackoor in
+  [#1](https://github.com/magikMaker/barva/issues/1).
+
 -------------------------------------------------------------------------------
 
 <a name="1.3.2"></a>

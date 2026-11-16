@@ -226,6 +226,54 @@ describe('Barva Library', () => {
       const out = barvaImport.red`A ${barvaImport.blue``} B`;
       expect(stripAnsi(out)).toBe('A  B');
     });
+
+    // Issue #1: the closing reset of a nested colorizer clears the outer
+    // style, so the outer style is reopened after it.
+    const E = '\x1b[';
+
+    test('reopens the outer style after a nested call', () => {
+      const { red, bold } = barvaImport;
+      expect(red`Error: ${bold`Important!`} This is critical.`).toBe(
+        `${E}31mError: ${E}1mImportant!${E}0m${E}31m` +
+          ` This is critical.${E}0m`,
+      );
+    });
+
+    test('reopens an outer background after a nested foreground', () => {
+      const { bgYellow, red } = barvaImport;
+      expect(bgYellow`a ${red`b`} c`).toBe(
+        `${E}43ma ${E}31mb${E}0m${E}43m c${E}0m`,
+      );
+    });
+
+    test('restores every outer level in deep nesting', () => {
+      const { bgYellow, red, bold } = barvaImport;
+      expect(bgYellow`a ${red`b ${bold`c`} d`} e`).toBe(
+        `${E}43ma ${E}31mb ${E}1mc${E}0m${E}43m${E}31m d` +
+          `${E}0m${E}43m e${E}0m`,
+      );
+    });
+
+    test('keeps bold after a nested bold', () => {
+      const { bold } = barvaImport;
+      expect(bold`a ${bold`b`} c`).toBe(
+        `${E}1ma ${E}1mb${E}0m${E}1m c${E}0m`,
+      );
+    });
+
+    test('reopens the outer style after a bare nested colorizer', () => {
+      const { red, blue } = barvaImport;
+      expect(red`a ${blue} b`).toBe(
+        `${E}31ma ${E}34m${E}0m${E}31m b${E}0m`,
+      );
+    });
+
+    test('reopens the outer style after a reset in a plain string', () => {
+      const { red } = barvaImport;
+      expect(red`a ${`x${E}0my`} b`).toBe(
+        `${E}31ma x${E}0m${E}31my b${E}0m`,
+      );
+    });
   });
 
   describe('Color enabling/disabling', () => {
